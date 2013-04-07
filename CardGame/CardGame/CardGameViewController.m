@@ -7,20 +7,19 @@
 //
 
 #import "CardGameViewController.h"
-#import "PlayingCardDeck.h"
-#import "CardMatchingGame.h"
+
 
 @interface CardGameViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *flipsLabel;
 @property (nonatomic) int flipsCount;
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
-@property (strong, nonatomic) CardMatchingGame *game;
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *changeMatchGame;
 @property (weak, nonatomic) IBOutlet UILabel *matchingGameMessage;
 @property (nonatomic) int scoreChange;
 @property (nonatomic) int numOfCards;
-@property (strong,nonatomic) Deck *newDeck;
+@property (strong, nonatomic) CardMatchingGame *game;
+
 @end
 
 @implementation CardGameViewController

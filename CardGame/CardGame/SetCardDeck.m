@@ -22,10 +22,12 @@
                 {
                     for (NSString *color in [SetCard colors])
                     {
+                        
                         SetCard *card = [[SetCard alloc]init];
+                        NSLog(@"card contents are %d, %@, %@, %@",count,shape,shade,color);
                         card.count=count;
                         card.shape=shape;
-                        card.shade=shape;
+                        card.shade=shade;
                         card.color=color;
                         [self addCard:card atTop:YES];
                     }
