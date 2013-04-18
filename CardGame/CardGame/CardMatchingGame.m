@@ -7,6 +7,9 @@
 //
 
 #import "CardMatchingGame.h"
+#import "SetCard.h"
+#import "PlayingCard.h"
+
 
 @interface CardMatchingGame()
 @property (readwrite, nonatomic) int score;
@@ -33,9 +36,8 @@
 #define FLIPCOST 1
 
 
--(NSString *)flipCardAtIndex:(NSUInteger)index forNumberofCards:(NSUInteger)cardNum;
+-(NSString *)flipCardAtIndex:(NSUInteger)index;
 {
-    cardNum=cardNum-1;
     Card *card = [self cardAtIndex:index];//this is the last card selected to be flipped
     if (!card.isUnplayable) //makes sure the selected card is playable
     {
@@ -47,8 +49,7 @@
                     [self.matchCards addObject:othercard];
                 }
             }
-            if (self.matchCards.count==cardNum)
-            {
+            if (([card isKindOfClass:[SetCard class]] && self.matchCards.count==2) || ([card isKindOfClass:[PlayingCard class]] && self.matchCards.count==1)) {
                 int matchScore = [card match:self.matchCards];
                 if (matchScore)
                 {
@@ -70,7 +71,7 @@
                         self.matchMessage=[self.matchMessage stringByAppendingString:othercard.contents];
                     }
                 }
-            }
+            }else self.matchMessage=[NSString stringWithFormat:@" You flipped %@ ",card.contents];
 
         } card.faceUp = !card.faceUp; // takes a face up card and flips it face down
     }

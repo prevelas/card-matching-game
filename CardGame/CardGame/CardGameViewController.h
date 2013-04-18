@@ -12,4 +12,5 @@
 
 @interface CardGameViewController : UIViewController
 @property (strong,nonatomic) Deck *newDeck;
+@property (strong, nonatomic) CardMatchingGame *game;
 @end

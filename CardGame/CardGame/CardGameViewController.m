@@ -14,11 +14,10 @@
 @property (nonatomic) int flipsCount;
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *changeMatchGame;
 @property (weak, nonatomic) IBOutlet UILabel *matchingGameMessage;
 @property (nonatomic) int scoreChange;
 @property (nonatomic) int numOfCards;
-@property (strong, nonatomic) CardMatchingGame *game;
+
 
 @end
 
@@ -30,7 +29,7 @@
 {
     if (!_game) _game=[[CardMatchingGame alloc]initWithCardCount:[self.cardButtons count]
                                                usingDeck:self.newDeck];
-    NSLog(@"card count is @%d",[self.cardButtons count]);
+    
         return _game;
 }
 
@@ -45,7 +44,6 @@
     [self setFlipsCount:0];//resets flipCount
     self.game=nil;//resets game to nil
     [CardMatchingGame self];//init to new set of cards
-    self.changeMatchGame.enabled=YES;//re-enables game change switch
     self.matchingGameMessage.text = [NSString stringWithFormat:@"New Deal!"];
     [self updateUI];
     
@@ -75,20 +73,10 @@
     self.scoreLabel.text=[NSString stringWithFormat:@"Score:%d",self.game.score];
 }
 
-- (IBAction)changeMatchGame:(UISegmentedControl *)sender
-{
-
-}
 
 - (IBAction)flipCard:(UIButton *)sender
 {
-    if (self.changeMatchGame.enabled)
-    {
-        self.changeMatchGame.enabled=NO;// disables game change switch
-    }
-    self.numOfCards=2;
-    self.numOfCards+=self.changeMatchGame.selectedSegmentIndex;
-    self.matchingGameMessage.text = [self.game flipCardAtIndex:[self.cardButtons indexOfObject:sender] forNumberofCards:self.numOfCards];
+    self.matchingGameMessage.text = [self.game flipCardAtIndex:[self.cardButtons indexOfObject:sender]];
     if (!sender.selected)//only increments the flipcount if I am flipping face up
     {
         self.flipsCount++;

@@ -16,7 +16,7 @@
 -(id)initWithCardCount:(NSUInteger)count
              usingDeck:(Deck *)deck;
 
--(NSString *)flipCardAtIndex:(NSUInteger)index forNumberofCards:(NSUInteger)cardNum;
+-(NSString *)flipCardAtIndex:(NSUInteger)index;
 
 -(Card *)cardAtIndex:(NSUInteger)index;
 
