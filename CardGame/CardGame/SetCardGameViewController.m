@@ -67,12 +67,12 @@
     NSArray *attributes=[card.contents componentsSeparatedByString:@","];
     NSString *color=[attributes objectAtIndex:0];
     NSString *shape=[attributes objectAtIndex:1];
-    NSString *shade=[attributes objectAtIndex:2];
+    //NSString *shade=[attributes objectAtIndex:2];
     int number=[[attributes objectAtIndex:3] intValue];
     for (int i=1; i<=number; i++) {
         self.cardContents=[self.cardContents stringByAppendingString:[self.cardView objectForKey:(shape)]];
     }
-    NSMutableAttributedString *mutCardContents=[self.cardContents mutableCopy];
+    NSMutableAttributedString *mutCardContents=[[NSMutableAttributedString alloc]initWithString:self.cardContents];
     NSRange range = NSMakeRange(0,[mutCardContents length]);
     [mutCardContents addAttribute:(NSForegroundColorAttributeName) value:([self.cardView objectForKey:(color)]) range:(range)];
     self.cardContents=[mutCardContents copy];
