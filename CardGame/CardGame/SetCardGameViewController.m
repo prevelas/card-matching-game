@@ -16,6 +16,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *matchingGameMessage;
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @property (strong, nonatomic) NSDictionary *cardView;
+@property (strong, nonatomic) NSAttributedString *changeAttributedString;
 
 
 @end
@@ -57,7 +58,14 @@
         [cardButton setAttributedTitle:title forState:UIControlStateSelected|UIControlStateDisabled];
         cardButton.selected=card.isFaceUp;
         cardButton.enabled=!card.isUnplayable;
-        cardButton.alpha=(card.isUnplayable ? 0.3 : 1.0);
+        if (card.isUnplayable)
+        {
+            [cardButton setAttributedTitle:[self changeAttributedString:title :@{NSBackgroundColorAttributeName:[[UIColor blackColor] colorWithAlphaComponent:0.8]}] forState:UIControlStateSelected|UIControlStateDisabled];
+        }
+        if (card.isFaceUp) {
+            [cardButton setAttributedTitle:[self changeAttributedString:title :@{NSBackgroundColorAttributeName:[[UIColor grayColor] colorWithAlphaComponent:0.4]}] forState:UIControlStateSelected];
+        }
+        //cardButton.alpha=(card.isUnplayable ? 0.3 : 1.0);
     }
     self.scoreLabel.text=[NSString stringWithFormat:@"Score:%d",self.game.score];
 }
@@ -70,29 +78,39 @@
     NSArray *modelContents=[card.contents componentsSeparatedByString:@","];
     NSString *color=[modelContents objectAtIndex:0];
     NSString *shape=[modelContents objectAtIndex:1];
-    NSString *shade=[modelContents objectAtIndex:2];
+    NSString *fill=[modelContents objectAtIndex:2];
     int number=[[modelContents objectAtIndex:3] intValue];
     
     //set the text for the card view contents without attributes
     NSString *text=[self.cardView objectForKey:shape];
     text=[text stringByPaddingToLength:number withString:[self.cardView objectForKey:shape] startingAtIndex:0];
-    //NSDictionary *attributes=@{NSStrokeColorAttributeName:[self.cardView objectForKey:color],NSStrokeWidthAttributeName:@"-5",NSForegroundColorAttributeName:[UIColor whiteColor]};
+    NSDictionary *tempAttributes=@{NSForegroundColorAttributeName:[self.cardView objectForKey:color]};
+    NSMutableDictionary *mutAttributes=[NSMutableDictionary dictionaryWithDictionary:tempAttributes];
     //build the attribute dictionary for the card view attributed string
-    
-    if ([shade isEqual:@"nofill"])
+    if ([fill isEqual:@"nofill"])
     {
-        NSDictionary *attributes=@{NSStrokeColorAttributeName:[self.cardView objectForKey:color],NSStrokeWidthAttributeName:@"-5",NSForegroundColorAttributeName:[UIColor whiteColor]};
+        NSDictionary *nofill= @{NSStrokeColorAttributeName:[self.cardView objectForKey:color],NSStrokeWidthAttributeName:@"-5",NSForegroundColorAttributeName:[UIColor whiteColor]};
+        [mutAttributes addEntriesFromDictionary:nofill];
+        
     }
-    else if ([shade isEqualToString:@"shade"])
+    else if ([fill isEqual:@"shade"])
     {
-        NSDictionary *attributes=@{NSStrokeColorAttributeName:[self.cardView objectForKey:color],NSStrokeWidthAttributeName:@"-5",NSForegroundColorAttributeName:[[self.cardView objectForKey:color] colorWithAlphaComponent:0.4]};
-    }else
-    {
-         NSDictionary *attributes=@{NSForegroundColorAttributeName:[self.cardView objectForKey:color]};
+        NSDictionary *shade=@{NSStrokeColorAttributeName:[self.cardView objectForKey:color],NSStrokeWidthAttributeName:@"-5",NSForegroundColorAttributeName:[[self.cardView objectForKey:color] colorWithAlphaComponent:0.4]};
+        [mutAttributes addEntriesFromDictionary:shade];
     }
+    NSDictionary *attributes=[NSDictionary dictionaryWithDictionary:mutAttributes];
     NSAttributedString *cardTitle=[[NSAttributedString alloc]initWithString:text attributes:attributes];
     NSLog(@"%@", cardTitle);
     return cardTitle;
+}
+
+-(NSAttributedString *)changeAttributedString:(NSAttributedString *)attributedString :(NSDictionary *)attributes;
+{
+    NSMutableAttributedString *changedAttributedString=[[NSMutableAttributedString alloc] init];
+	[changedAttributedString setAttributedString:attributedString];
+    NSRange range = {0, [attributedString length]};
+    [changedAttributedString addAttributes:attributes range:range];
+    return changedAttributedString;
 }
 
 
