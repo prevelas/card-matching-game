@@ -15,8 +15,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
 @property (weak, nonatomic) IBOutlet UILabel *matchingGameMessage;
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
-@property (strong, nonatomic) NSString *cardContents;
 @property (strong, nonatomic) NSDictionary *cardView;
+
+
 @end
 
 @implementation SetCardGameViewController
@@ -28,11 +29,13 @@
 }
 
 
+
 -(NSDictionary *)cardView
 {
-    NSDictionary *cardView = @{@"red": [UIColor redColor],@"green": [UIColor greenColor],@"blue":[UIColor blueColor],@"triangle":@"△", @"circle":@"❍",@"square":@"❒"};
+    NSDictionary *cardView = @{@"red": [UIColor redColor],@"green": [UIColor greenColor],@"blue":[UIColor blueColor],@"triangle":@"▲", @"circle":@"●",@"square":@"■"};
     return cardView;
 }
+
 
 @synthesize newDeck;
 
@@ -48,10 +51,10 @@
     for (UIButton *cardButton in self.cardButtons)
     {
         Card *card = [self.game cardAtIndex:[self.cardButtons indexOfObject:cardButton]];
-        NSString *title=[self cardContents:card];
-        [cardButton setTitle:title forState:UIControlStateNormal];
-        [cardButton setTitle:title forState:UIControlStateSelected];
-        [cardButton setTitle:title forState:UIControlStateSelected|UIControlStateDisabled];
+        NSAttributedString *title=[self cardTitle:card];
+        [cardButton setAttributedTitle:title forState:UIControlStateNormal];
+        [cardButton setAttributedTitle:title forState:UIControlStateSelected];
+        [cardButton setAttributedTitle:title forState:UIControlStateSelected|UIControlStateDisabled];
         cardButton.selected=card.isFaceUp;
         cardButton.enabled=!card.isUnplayable;
         cardButton.alpha=(card.isUnplayable ? 0.3 : 1.0);
@@ -61,22 +64,35 @@
 
  
 
--(NSString *)cardContents:(Card *)card
+-(NSAttributedString *)cardTitle:(Card *)card
 {
-    _cardContents=@"";
-    NSArray *attributes=[card.contents componentsSeparatedByString:@","];
-    NSString *color=[attributes objectAtIndex:0];
-    NSString *shape=[attributes objectAtIndex:1];
-    //NSString *shade=[attributes objectAtIndex:2];
-    int number=[[attributes objectAtIndex:3] intValue];
-    for (int i=1; i<=number; i++) {
-        self.cardContents=[self.cardContents stringByAppendingString:[self.cardView objectForKey:(shape)]];
+    //break up the card model contents
+    NSArray *modelContents=[card.contents componentsSeparatedByString:@","];
+    NSString *color=[modelContents objectAtIndex:0];
+    NSString *shape=[modelContents objectAtIndex:1];
+    NSString *shade=[modelContents objectAtIndex:2];
+    int number=[[modelContents objectAtIndex:3] intValue];
+    
+    //set the text for the card view contents without attributes
+    NSString *text=[self.cardView objectForKey:shape];
+    text=[text stringByPaddingToLength:number withString:[self.cardView objectForKey:shape] startingAtIndex:0];
+    //NSDictionary *attributes=@{NSStrokeColorAttributeName:[self.cardView objectForKey:color],NSStrokeWidthAttributeName:@"-5",NSForegroundColorAttributeName:[UIColor whiteColor]};
+    //build the attribute dictionary for the card view attributed string
+    
+    if ([shade isEqual:@"nofill"])
+    {
+        NSDictionary *attributes=@{NSStrokeColorAttributeName:[self.cardView objectForKey:color],NSStrokeWidthAttributeName:@"-5",NSForegroundColorAttributeName:[UIColor whiteColor]};
     }
-    NSMutableAttributedString *mutCardContents=[[NSMutableAttributedString alloc]initWithString:self.cardContents];
-    NSRange range = NSMakeRange(0,[mutCardContents length]);
-    [mutCardContents addAttribute:(NSForegroundColorAttributeName) value:([self.cardView objectForKey:(color)]) range:(range)];
-    self.cardContents=[mutCardContents copy];
-    return self.cardContents;
+    else if ([shade isEqualToString:@"shade"])
+    {
+        NSDictionary *attributes=@{NSStrokeColorAttributeName:[self.cardView objectForKey:color],NSStrokeWidthAttributeName:@"-5",NSForegroundColorAttributeName:[[self.cardView objectForKey:color] colorWithAlphaComponent:0.4]};
+    }else
+    {
+         NSDictionary *attributes=@{NSForegroundColorAttributeName:[self.cardView objectForKey:color]};
+    }
+    NSAttributedString *cardTitle=[[NSAttributedString alloc]initWithString:text attributes:attributes];
+    NSLog(@"%@", cardTitle);
+    return cardTitle;
 }
 
 
